@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a56db" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AL SAYYAH" />
+  <meta name="description" content="Mini Market AL SAYYAH - Quality & Convenience" />
+  <title>Mini Market AL SAYYAH</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Apple Touch Icons (inline SVG fallback as data URI) -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ==================== SPLASH SCREEN ==================== -->
+  <div id="splash" class="screen active">
+    <div class="splash-bg-circle"></div>
+    <div class="splash-bg-circle"></div>
+    <div class="splash-bg-circle"></div>
+    <div class="splash-content">
+      <div class="splash-logo-bg">🏪</div>
+      <div class="splash-title">
+        Mini Market
+        <span>AL SAYYAH</span>
+      </div>
+      <div class="splash-subtitle">Quality &amp; Convenience</div>
+    </div>
+    <div class="splash-loader">
+      <div class="splash-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="splash-status">Connecting...</div>
+    </div>
+  </div>
+
+  <!-- ==================== HOME SCREEN ==================== -->
+  <div id="home" class="screen">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div>
+          <div class="topbar-sub">Welcome to</div>
+          <div class="topbar-title">AL SAYYAH Market</div>
+        </div>
+        <button class="topbar-icon-btn" id="install-btn" style="display:none" title="Install App">⬇️</button>
+      </div>
+    </div>
+
+    <!-- Exchange Rate Bar -->
+    <div class="rate-bar" id="rate-bar">1 USD = 90,000 LBP</div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search for groceries..." />
+        <button class="scan-btn-search" onclick="startScanner()">📷 Scan</button>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section-header">
+      <span class="section-title">Categories</span>
+      <button class="see-all" onclick="document.getElementById('categories-row').scrollTo({left:9999,behavior:'smooth'})">See All</button>
+    </div>
+    <div class="categories-scroll" id="categories-row">
+      <div class="loading-spinner"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Barcode Scanner Card -->
+    <div class="scan-card" onclick="startScanner()">
+      <span class="scan-card-icon">📷</span>
+      <h3>Quick Barcode Scanner</h3>
+      <p>Point your camera at a product barcode to see prices and details instantly.</p>
+      <button class="scan-card-btn">📷 Scan Now</button>
+    </div>
+
+    <!-- Items Section -->
+    <div class="section-header">
+      <span class="section-title">Today's Products</span>
+    </div>
+    <div class="items-section pb-nav">
+      <div class="items-grid" id="items-grid">
+        <div class="loading-spinner" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCANNER SCREEN ==================== -->
+  <div id="scanner-screen" class="screen">
+    <div class="scanner-header">
+      <button class="scanner-back" onclick="closeScannerScreen()">←</button>
+      <div class="scanner-title">Barcode Scanner</div>
+    </div>
+    <div id="scanner-video-wrap">
+      <video id="scanner-video" autoplay playsinline muted></video>
+      <div class="scanner-frame">
+        <div class="scanner-line"></div>
+      </div>
+      <!-- Manual Entry -->
+      <div class="scanner-input-wrap">
+        <input type="text" id="manual-barcode" class="scanner-manual-input" placeholder="Enter barcode manually..." inputmode="numeric" />
+        <button class="scanner-manual-btn" id="manual-barcode-btn">Search</button>
+      </div>
+    </div>
+    <!-- Result Panel -->
+    <div class="scanner-result" id="scan-result">
+      <div class="modal-handle"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN LOGIN ==================== -->
+  <div id="admin-login" class="screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="login-logo-icon">🔐</span>
+        <h2>Admin Panel</h2>
+        <p>Mini Market AL SAYYAH</p>
+      </div>
+      <div id="login-error" class="login-error"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="admin-username">Username</label>
+          <input type="text" id="admin-username" placeholder="admin" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="admin-password">Password</label>
+          <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <button type="submit" id="login-btn" class="btn-primary">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN DASHBOARD ==================== -->
+  <div id="admin-dashboard" class="screen">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="admin-header-top">
+        <div class="admin-header-text">
+          <h2>Admin Panel</h2>
+          <p>Mini Market AL SAYYAH</p>
+        </div>
+        <button class="admin-logout-btn" onclick="adminLogout()">Logout →</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="stat-card">
+        <span class="stat-icon">📦</span>
+        <span class="stat-value" id="stat-products">—</span>
+        <span class="stat-label">Products</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🏷️</span>
+        <span class="stat-value" id="stat-categories">—</span>
+        <span class="stat-label">Categories</span>
+      </div>
+    </div>
+
+    <!-- Scrollable content -->
+    <div style="overflow-y:auto;flex:1;padding-bottom:80px">
+
+      <!-- Inventory Management -->
+      <div class="admin-section mt-4">
+        <div class="admin-section-title">Inventory Management</div>
+
+        <div class="admin-action-card" onclick="openAddItemModal(false)">
+          <div class="action-icon blue">➕</div>
+          <div class="action-text">
+            <h4>Add New Product</h4>
+            <p>Register new items with barcode</p>
+          </div>
+          <span class="action-arrow">›</span>
+        </div>
+
+        <div class="admin-action-card" onclick="openManageItems()">
+          <div class="action-icon orange">📋</div>
+          <div class="action-text">
+            <h4>Manage Products</h4>
+            <p>Edit or delete existing products</p>
+          </div>
+          <span class="action-arrow">›</span>
+        </div>
+
+        <div class="admin-action-card" onclick="openManageCategories()">
+          <div class="action-icon green">🏷️</div>
+          <div class="action-text">
+            <h4>Manage Categories</h4>
+            <p>Add or remove product categories</p>
+          </div>
+          <span class="action-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Exchange Rate -->
+      <div class="admin-section mt-3">
+        <div class="admin-section-title">Exchange Rate Settings</div>
+        <div style="background:white;border-radius:16px;padding:16px;box-shadow:var(--shadow-sm);">
+          <div class="form-group" style="margin-bottom:12px">
+            <label>1 USD = (LBP)</label>
+            <input type="number" id="admin-rate-input" class="form-group input" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-200);border-radius:12px;font-size:15px;font-family:var(--font-body);outline:none;" value="90000" />
+          </div>
+          <button class="btn-primary" onclick="saveExchangeRate()">💾 Save Rate</button>
+        </div>
+      </div>
+
+      <!-- Recent Updates -->
+      <div class="admin-section mt-3">
+        <div class="section-header" style="padding:0 0 10px">
+          <span class="admin-section-title">Recent Products</span>
+        </div>
+        <div style="background:white;border-radius:16px;padding:8px 16px;box-shadow:var(--shadow-sm)">
+          <div id="recent-updates">
+            <div class="loading-spinner"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM NAVIGATION ==================== -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-screen="home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" data-screen="scanner-screen">
+      <span class="nav-icon">📷</span>
+      <span class="nav-label">Scan</span>
+    </div>
+    <div class="nav-item" data-screen="admin-login">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Admin</span>
+    </div>
+  </nav>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Manage Items Modal -->
+  <div class="modal-overlay" id="items-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="modal-title" style="margin:0">Manage Products</div>
+        <button onclick="closeModal('items-modal')" style="background:var(--gray-100);border:none;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:700">✕ Close</button>
+      </div>
+      <div id="admin-items-list">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Item Modal -->
+  <div class="modal-overlay" id="add-item-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="modal-title" style="margin:0" id="add-item-title">Add New Item</div>
+        <button onclick="closeModal('add-item-modal')" style="background:var(--gray-100);border:none;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:700">✕</button>
+      </div>
+      <form id="add-item-form">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" id="item-name" placeholder="e.g. Almarai Milk 1L" required />
+        </div>
+        <div class="form-group">
+          <label>Barcode *</label>
+          <input type="text" id="item-barcode" placeholder="e.g. 6281234567890" inputmode="numeric" required />
+        </div>
+        <div class="form-group">
+          <label>Price (USD) *</label>
+          <input type="number" id="item-price-usd" placeholder="0.00" step="0.01" min="0" required />
+        </div>
+        <div class="form-group">
+          <label>Price (LBP) — auto-calculated</label>
+          <input type="number" id="item-price-lb" placeholder="0" min="0" required />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="item-category" style="width:100%;padding:12px 16px;border:1.5px solid var(--gray-200);border-radius:12px;font-size:14px;font-family:var(--font-body);outline:none;background:white">
+            <option value="">-- No Category --</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary" id="save-item-btn">Save Item</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manage Categories Modal -->
+  <div class="modal-overlay" id="categories-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="modal-title" style="margin:0">Manage Categories</div>
+        <button onclick="closeModal('categories-modal')" style="background:var(--gray-100);border:none;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:700">✕ Close</button>
+      </div>
+      <!-- Add new category -->
+      <div style="background:var(--blue-pale);border-radius:14px;padding:14px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:10px">Add New Category</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="text" id="new-cat-icon" placeholder="Icon emoji 🍎" style="width:90px;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:16px;outline:none;text-align:center" maxlength="4" />
+          <input type="text" id="new-cat-name" placeholder="Category name" style="flex:1;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:14px;font-family:var(--font-body);outline:none" />
+        </div>
+        <button id="add-cat-btn" class="btn-primary" style="margin-top:4px" onclick="addCategory()">➕ Add Category</button>
+      </div>
+      <div id="admin-categories-list">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<!-- Scripts -->
+<script src="js/supabase.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
