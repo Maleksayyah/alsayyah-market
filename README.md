@@ -69,15 +69,6 @@ alsayyah/
 
 ---
 
-## 🔑 Admin Login
-
-Default credentials (change in Supabase):
-- **Username:** `admin`
-- **Password:** `admin123`
-
-> ⚠️ Change your password in the `store_admins` table after first login!
-
----
 
 ## 📷 Barcode Scanner
 
